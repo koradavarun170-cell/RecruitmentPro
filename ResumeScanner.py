@@ -147,7 +147,8 @@ def save_to_db(name, phone, cgpa, final_score, ai_status, resume_text):
 
     conn.commit()
     conn.close()
- -------------------------
+    
+#-------------------------
 # Streamlit Page Config
 # -------------------------
 st.set_page_config(page_title="Hybrid AI Recruitment Assistant", layout="wide")
