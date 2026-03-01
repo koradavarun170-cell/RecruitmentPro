@@ -321,6 +321,22 @@ if st.button("🚀 Screen Candidates"):
                 ai_status = "Consider 🤔"
             else:
                 ai_status = "Strong Hire ✅"
+            # Extract candidate name (from filename)
+            candidate_name = file.name.replace(".pdf", "")
+            
+            # Extract phone number (basic regex)
+            phone_match = re.search(r'\b\d{10}\b', text)
+            phone = phone_match.group(0) if phone_match else "Not Found"
+            
+            # Save to database
+            save_to_db(
+                candidate_name,
+                phone,
+                cgpa,
+                final_score,
+                ai_status,
+                text
+            )
 
             results.append({
                 "Candidate": file.name,
