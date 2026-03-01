@@ -347,3 +347,7 @@ if st.button("📂 View Stored Candidates"):
 
     st.subheader("📊 Stored Candidates in Database")
     st.dataframe(df_db, use_container_width=True)
+if st.button("🗑 Reset Database"):
+    cursor.execute("DELETE FROM candidates")
+    conn.commit()
+    st.success("Database cleared successfully!")
