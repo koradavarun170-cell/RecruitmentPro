@@ -129,9 +129,9 @@ def init_db():
 
     conn.commit()
     if st.button("🗑 Reset Database"):
-    cursor.execute("DELETE FROM candidates")
-    conn.commit()
-    st.success("Database cleared successfully!")
+        cursor.execute("DELETE FROM candidates")
+        conn.commit()
+        st.success("Database cleared successfully!")
     conn.close()
 
 init_db()
