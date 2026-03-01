@@ -7,6 +7,100 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import sqlite3
 import os
+import base64
+
+st.markdown("""
+<style>
+
+/* Entire text area block */
+.stTextArea > div > div {
+    background-color: transparent !important;
+}
+
+/* Actual textarea */
+.stTextArea textarea {
+    background-color: transparent !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Placeholder */
+.stTextArea textarea::placeholder {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+
+/* Remove white background from main selectbox */
+div[data-baseweb="select"] > div {
+    background-color: transparent !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    backdrop-filter: blur(8px);
+    color: white !important;
+}
+
+/* Text inside selectbox */
+div[data-baseweb="select"] span {
+    color: white !important;
+}
+
+/* Dropdown popup container */
+div[role="listbox"] {
+    background-color: transparent !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white !important;
+}
+
+/* Each option */
+div[role="option"] {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+/* Hover effect */
+div[role="option"]:hover {
+    background-color: rgba(255,255,255,0.2) !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# Function to set background
+def set_bg(image_file):
+    with open(image_file, "rb") as f:
+        data = f.read()
+    encoded = base64.b64encode(data).decode()
+
+    page_bg = f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{encoded}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    </style>
+    """
+    st.markdown(page_bg, unsafe_allow_html=True)
+
+# Call function
+set_bg("background.png")
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # -------------------------
 # 🔑 Configure Gemini API
