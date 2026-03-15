@@ -2,11 +2,12 @@ from fastapi import FastAPI, UploadFile, File, Form
 from typing import List
 from services import ai_evaluator, candidate_matching, resume_parser
 from models import candidate_model
-from database.db import session,engine
+from database.db import session, engine
 
 app = FastAPI()
 
 candidate_model.Base.metadata.create_all(bind=engine)
+
 
 @app.post("/screen_candidates")
 async def screen_candidates(
@@ -16,8 +17,14 @@ async def screen_candidates(
     required_projects: str = Form(...)
 ):
 
-    required_skills = [s for s in required_skills.split(",") if s]
-    required_projects = [p for p in required_projects.split(",") if p]
+    required_skills = [s.strip() for s in required_skills.split(",") if s.strip()]
+    required_projects = [p.strip() for p in required_projects.split(",") if p.strip()]
+
+    # AI extract skills from job description
+    ai_skills, ai_projects = ai_evaluator.extract_requirements(job_description)
+
+    required_skills = list(set(required_skills + ai_skills))
+    required_projects = list(set(required_projects + ai_projects))
 
     results = []
 
@@ -37,7 +44,8 @@ async def screen_candidates(
             job_description
         )
 
-        ai_result, ai_score = ai_evaluator.gemini_evaluate(
+        # AI resume evaluation
+        ai_result, ai_score = ai_evaluator.evaluate_resume(
             resume_text,
             job_description
         )
@@ -49,7 +57,7 @@ async def screen_candidates(
             len(project_match) * 5,
             2
         )
-        
+
         if final_score < 40:
             decision = "Rejected"
         elif final_score < 70:
@@ -69,13 +77,21 @@ async def screen_candidates(
             "ai_report": ai_result
         })
 
+    results = sorted(results, key=lambda x: x["final_score"], reverse=True)
+
     return {"results": results}
+
+
 @app.post("/store_candidates")
 async def store_candidates(data: dict):
+
     results = data["results"]
     job_role = data["job_role"]
+
     db = session()
+
     for result in results:
+
         candidate = candidate_model.Candidate(
             name=result["candidate"],
             job_role=job_role,

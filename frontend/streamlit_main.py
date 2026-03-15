@@ -57,7 +57,7 @@ ALL_PROJECTS = [
 ]
 
 
-required_skills = st.multiselect("Required Skills", ALL_SKILLS)
+required_skills = st.multiselect("Required Skills", ALL_SKILLS,)
 
 required_projects = st.multiselect("Project Domains", ALL_PROJECTS)
 
@@ -72,7 +72,7 @@ hr_description = st.text_area(
 
 uploaded_files = st.file_uploader(
     "Upload Resume PDFs",
-    type=["pdf"],
+    type=["pdf","docx"],
     accept_multiple_files=True
 )
 
@@ -135,6 +135,63 @@ if st.button("🚀 Screen Candidates"):
                 "candidate_report.csv",
                 "text/csv"
             )
+
+st.subheader("📅 Schedule Interview")
+
+candidate_name = st.text_input("Candidate Name")
+
+interview_date = st.date_input("Interview Date")
+
+interview_time = st.time_input("Interview Time")
+
+if st.button("Schedule Interview"):
+
+    payload = {
+        "candidate_name": candidate_name,
+        "date": str(interview_date),
+        "time": str(interview_time)
+    }
+
+    response = requests.post(
+        "http://127.0.0.1:8000/schedule_interview",
+        json=payload
+    )
+
+    if response.status_code == 200:
+        st.success("Interview Scheduled Successfully!")
+    else:
+        st.error("Failed to schedule interview")
+
+
+
+st.subheader("📧 Generate Candidate Communication")
+
+candidate_name_msg = st.text_input("Candidate Name for Message")
+
+decision_msg = st.selectbox(
+    "Decision",
+    ["Strong Hire", "Consider", "Rejected"]
+)
+
+role_msg = st.text_input("Role for Message")
+
+if st.button("Generate Message"):
+
+    payload = {
+        "name": candidate_name_msg,
+        "role": role_msg,
+        "decision": decision_msg
+    }
+
+    response = requests.post(
+        "http://127.0.0.1:8000/generate_message",
+        json=payload
+    )
+
+    if response.status_code == 200:
+        st.text_area("Generated Message", response.json()["message"], height=200)
+
+
 
 
 st.subheader("💾 Store Results in Database")
