@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import base64
-import backend
+from backend import *
 st.set_page_config(page_title="AI Recruitment Assistant", layout="wide")
 
 
